@@ -1,18 +1,18 @@
 [user]
-	  signingkey = D9AC08EFCA88669E
-	  name = Daniel Barnes
-	  email = dabarnes2b@gmail.com
+    signingkey = D9AC08EFCA88669E
+    name = Daniel Barnes
+    email = dabarnes2b@gmail.com
 [gpg]
     program = /opt/homebrew/bin/gpg
 [core]
-	  editor = vim
+    editor = vim
     pager = delta
 [init]
-	  defaultBranch = main
+    defaultBranch = main
 [tag]
-	  gpgsign = true
+    gpgsign = true
 [commit]
-	  gpgsign = true
+    gpgsign = true
 [pager]
     diff = delta
     log = delta
@@ -43,6 +43,6 @@
 [alias]
     pusj = push
 [pull]
-	  ff = only
+    ff = only
 [push]
-	  autoSetupRemote = true
+    autoSetupRemote = true

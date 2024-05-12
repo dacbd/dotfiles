@@ -8,6 +8,11 @@ then
   compinit
 fi
 
+# Rust things
+if [[ -d "$HOME.cargo/bin" ]]; then
+  export PATH="$HOME/.cargo/bin:$PATH"
+fi
+
 # my alias setup
 alias python='python3'
 alias vim='nvim'
@@ -18,6 +23,7 @@ if [[ -d "$HOME/.local/bin" ]]; then
 fi
 
 # smart card ssh
+export GPG_TTY=$(tty)
 export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
 gpgconf --launch gpg-agent
 

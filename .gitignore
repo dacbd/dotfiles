@@ -1,0 +1,6 @@
+.gnupg/trustdb.gpg
+.gnupg/pubring.kbx
+.gnupg/pubring.kbx~
+.gnupg/private-keys-v1.d/
+.gnupg/reader_0.status
+.gnupg/.#lk0x*
