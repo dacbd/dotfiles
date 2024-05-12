@@ -1,0 +1,48 @@
+[user]
+	  signingkey = D9AC08EFCA88669E
+	  name = Daniel Barnes
+	  email = dabarnes2b@gmail.com
+[gpg]
+    program = /opt/homebrew/bin/gpg
+[core]
+	  editor = vim
+    pager = delta
+[init]
+	  defaultBranch = main
+[tag]
+	  gpgsign = true
+[commit]
+	  gpgsign = true
+[pager]
+    diff = delta
+    log = delta
+    reflog = delta
+    show = delta
+[merge]
+    conflictstyle = diff3
+[diff]
+    colorMoved = default
+[interactive]
+    diffFilter = delta --color-only --features=interactive
+[delta]
+    features = decorations
+    navigate = true
+    light = false
+#    side-by-side = true
+    line-numbers = true
+[delta "interactive"]
+    keep-plus-minus-markers = false
+[delta "decorations"]
+    commit-decoration-style = blue ol
+    commit-style = raw
+    file-style = omit
+    hunk-header-decoration-style = blue box
+    hunk-header-file-style = red
+    hunk-header-line-number-style = "#067a00"
+    hunk-header-style = file line-number syntax
+[alias]
+    pusj = push
+[pull]
+	  ff = only
+[push]
+	  autoSetupRemote = true
