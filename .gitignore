@@ -4,3 +4,4 @@
 .gnupg/private-keys-v1.d/
 .gnupg/reader_0.status
 .gnupg/.#lk0x*
+.gnupg/crls.d/

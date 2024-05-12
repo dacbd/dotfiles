@@ -17,3 +17,19 @@ When using `stow --adopt .` it will:
 - move conflicting files into the repo.
 - symlink files back to the parent dir(`~/`)
 - it will overwrite the files present in the repo (so commit before hand)
+
+
+
+# Notes
+
+## SSH/GPG/yubikey things
+
+be sure to import the public keys:
+```bash
+# download
+wget https://github.com/dacbd.gpg
+# import
+gpg --import dacbd.gpg
+# verify
+gpg -k
+```
