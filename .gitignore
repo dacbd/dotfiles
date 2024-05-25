@@ -5,3 +5,4 @@
 .gnupg/reader_0.status
 .gnupg/.#lk0x*
 .gnupg/crls.d/
+.config/tmux/plugins

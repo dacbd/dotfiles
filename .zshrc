@@ -9,6 +9,7 @@ then
 fi
 
 # Rust things
+# brew install rust
 if [[ -d "$HOME.cargo/bin" ]]; then
   export PATH="$HOME/.cargo/bin:$PATH"
 fi
@@ -28,7 +29,15 @@ export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
 gpgconf --launch gpg-agent
 
 
+# fzf fuzzy findings
+# brew install fzf
+if [[ command -v fzf ]]; then
+  eval "$(fzf --zsh)"
+fi
+
+
 # pyenv things
+# brew install pyenv
 if [[ -d "$HOME/.pyenv" ]]; then
   export PYENV_ROOT="$HOME/.pyenv"
   command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
