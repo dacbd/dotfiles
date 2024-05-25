@@ -1,0 +1,22 @@
+root = true
+
+# every file
+[*]
+end_of_line = lf
+insert_final_newline = true
+charset = utf-8
+
+# python
+[*.py]
+indent_style = space
+indent_size = 4
+
+# js/ts
+[*.{js,ts,jsx,tsx}]
+indent_style = space
+indent_size = 2
+
+# go
+[*.go]
+indent_style = tab
+indent_size = 4
