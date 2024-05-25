@@ -31,7 +31,7 @@ gpgconf --launch gpg-agent
 
 # fzf fuzzy findings
 # brew install fzf
-if [[ command -v fzf ]]; then
+if [[ -x "$(command -v fzf)" ]]; then
   eval "$(fzf --zsh)"
 fi
 
