@@ -1,3 +1,4 @@
+# gpg
 .gnupg/trustdb.gpg
 .gnupg/pubring.kbx
 .gnupg/pubring.kbx~
@@ -5,4 +6,12 @@
 .gnupg/reader_0.status
 .gnupg/.#lk0x*
 .gnupg/crls.d/
+
+# tmux
 .config/tmux/plugins
+
+# htop
+.config/htop/htoprc
+
+# misc
+.config/configstore/update-notifier-@dotenvx
