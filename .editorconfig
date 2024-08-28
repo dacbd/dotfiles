@@ -17,6 +17,6 @@ indent_style = space
 indent_size = 2
 
 # go
-[*.go]
+[*.{go,templ}]
 indent_style = tab
 indent_size = 4
