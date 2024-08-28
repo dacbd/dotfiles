@@ -23,6 +23,11 @@ if [[ -d "$HOME/.local/bin" ]]; then
   export PATH="$HOME/.local/bin:$PATH"
 fi
 
+# some go path stuff
+if [[ -d "$HOME/go/bin" ]]; then
+  export PATH="$HOME/go/bin:$PATH"
+fi
+
 # smart card ssh
 export GPG_TTY=$(tty)
 export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
