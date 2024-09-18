@@ -33,3 +33,10 @@ gpg --import dacbd.gpg
 # verify
 gpg -k
 ```
+
+
+# CLI tools
+todo auto install/bootstrap
+
+- https://helm.sh/docs/intro/install/
+
