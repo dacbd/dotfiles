@@ -49,3 +49,7 @@ if [[ -d "$HOME/.pyenv" ]]; then
   eval "$(pyenv init -)"
 fi
 
+# kubctl/krew
+if [[ -d "$HOME/.krew" ]]; then
+  export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+fi
