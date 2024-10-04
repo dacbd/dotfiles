@@ -6,6 +6,7 @@
 .gnupg/reader_0.status
 .gnupg/.#lk0x*
 .gnupg/crls.d/
+.gnupg/reader_*.status
 
 # tmux
 .config/tmux/plugins
@@ -15,3 +16,6 @@
 
 # misc
 .config/configstore/update-notifier-@dotenvx
+
+# gcloud
+.config/gcloud
