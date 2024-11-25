@@ -5,6 +5,7 @@ Bootstraping the setup:
 - Install [Rust](https://doc.rust-lang.org/cargo/getting-started/installation.html) `curl https://sh.rustup.rs -sSf | sh`
 - Install [Go](https://go.dev/doc/install)
 - Install [Alacritty](https://alacritty.org)
+    - Install [Delta](https://dandavison.github.io/delta/installation.html) `cargo install git-delta`
 - Install [Node](https://nodejs.org/en/download/source-code)
 - Install [Deno](https://docs.deno.com/runtime/getting_started/installation/)
 
