@@ -1,6 +1,25 @@
 # dotfiles
 not much to see here...
+Bootstraping the setup:
+- Install [Brew](https://brew.sh) `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
+- Install [Rust](https://doc.rust-lang.org/cargo/getting-started/installation.html) `curl https://sh.rustup.rs -sSf | sh`
+- Install [Go](https://go.dev/doc/install)
+- Install [Alacritty](https://alacritty.org)
+- Install [Node](https://nodejs.org/en/download/source-code)
+- Install [Deno](https://docs.deno.com/runtime/getting_started/installation/)
 
+brew installs:
+```bash
+brew install stow \
+    wget \
+    neovim \
+    tmux \
+    gnupg \
+    pinentry-mac \
+    cmake
+```
+
+`git submodule update --init --recursive`
 ## Stow usage
 
 ### install
@@ -12,6 +31,7 @@ not much to see here...
 Only execute `stow` in the root dir of the repo: `~/dotfiles`
 It will symlink the contents to the parent dir `~/`
 
+So run `stow .`
 
 When using `stow --adopt .` it will:
 - move conflicting files into the repo.
@@ -23,6 +43,7 @@ When using `stow --adopt .` it will:
 # Notes
 
 ## SSH/GPG/yubikey things
+- `brew install gnupg pinentry-mac`
 
 be sure to import the public keys:
 ```bash
