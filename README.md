@@ -1,5 +1,6 @@
 # dotfiles
 not much to see here...
+
 Bootstraping the setup:
 - Install [Brew](https://brew.sh) `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
 - Install [Rust](https://doc.rust-lang.org/cargo/getting-started/installation.html) `curl https://sh.rustup.rs -sSf | sh`
@@ -9,7 +10,8 @@ Bootstraping the setup:
 - Install [Node](https://nodejs.org/en/download/source-code)
 - Install [Deno](https://docs.deno.com/runtime/getting_started/installation/)
 
-brew installs:
+
+Base Brew installs.
 ```bash
 brew install stow \
     wget \
