@@ -19,3 +19,9 @@
 
 # gcloud
 .config/gcloud
+
+# uv
+.config/uv/uv-receipt.json
+
+# misc
+.config/fish

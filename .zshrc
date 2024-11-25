@@ -9,7 +9,6 @@ then
 fi
 
 # Rust things
-# brew install rust
 if [[ -d "$HOME.cargo/bin" ]]; then
   export PATH="$HOME/.cargo/bin:$PATH"
 fi
@@ -41,9 +40,16 @@ if [[ -x "$(command -v fzf)" ]]; then
 fi
 
 
+# uv is probably better for python now
+# https://docs.astral.sh/uv/#highlights 
+if [[ -d "$HOME/.local/bin" ]]; then
+  export PATH="$HOME/.local/bin:$PATH"
+  source $HOME/.local/bin/env
+fi
+
 # pyenv things
 # brew install pyenv
-if [[ -d "$HOME/.pyenv" ]]; then
+if [[ -d "$HOME/.pyenv" && ! -x "$(command -v uv)" ]]; then
   export PYENV_ROOT="$HOME/.pyenv"
   command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
   eval "$(pyenv init -)"
@@ -59,3 +65,5 @@ if [ -f '/Users/dacbd/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/dacbd/goo
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/Users/dacbd/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/dacbd/google-cloud-sdk/completion.zsh.inc'; fi
+
+. "$HOME/.local/bin/env"
