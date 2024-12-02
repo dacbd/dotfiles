@@ -13,13 +13,19 @@ Bootstraping the setup:
 
 Base Brew installs.
 ```bash
+brew tap hashicorp/tap
 brew install stow \
     wget \
+    gum \
+    jq \
     neovim \
     tmux \
     gnupg \
     pinentry-mac \
-    cmake
+    cmake \
+    derailed/k9s/k9s \
+    hashicorp/tap/terraform \
+    helm
 ```
 
 `git submodule update --init --recursive`
