@@ -1,10 +1,68 @@
 #!/bin/bash
 
-if [ ! command -v gum &> /dev/null ]; then
-  echo "gum not installed"
-  exit 1
+# FIX: make completion pass through work at some point
+_kubectl_wrapper_completion() {
+    # Get all args except the first one (our script name)
+    local args=("${COMP_WORDS[@]:1}")
+    # Call kubectl's completion with our args
+    COMP_WORDS=("kubectl" "${args[@]}")
+    # Adjust completion point for kubectl
+    COMP_CWORD=$((COMP_CWORD))
+    # Call kubectl's completion function
+    _kubectl
+}
+
+
+# Check if gum is installed
+if ! command -v gum &> /dev/null; then
+    echo "Error: 'gum' is not installed."
+    echo "Visit: https://github.com/charmbracelet/gum for installation instructions."
+    exit 1
 fi
 
-context=$(kubectl config get-contexts -o name | gum choose)
+# Check if kubectl is installed
+if ! command -v kubectl &> /dev/null; then
+    echo "Error: 'kubectl' is not installed."
+    exit 1
+fi
 
-kubectl --context "$context" $@
+if ! command -v k9s &> /dev/null; then
+    echo "Error: 'k9s' is not installed."
+    exit 1
+fi
+
+# Show help if requested
+if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
+    echo "Usage: $(basename "$0") [kubectl commands and flags]"
+    echo "A kubectl wrapper that lets you choose your context interactively."
+    echo "Or enter k9s (if no args are used)"
+    echo ""
+    echo "Example:"
+    echo "  $(basename "$0") get pods"
+    echo "  $(basename "$0") get nodes"
+    exit 0
+fi
+
+#complete -F _kubectl_wrapper_completion $(basename "$0")
+
+# Choose context with gum, showing current context
+context=$(kubectl config get-contexts -o name | gum choose --header "Select kubernetes context:")
+
+# Exit if no context was selected (user pressed Ctrl+C)
+if [ -z "$context" ]; then
+    echo "No context selected, exiting."
+    exit 1
+fi
+
+# Execute kubectl command with selected context
+if [ -z "$@" ]; then
+    gum confirm "Run k9s instead?"
+    if [ $? == 0 ]; then 
+        echo "starting k9s..."
+        k9s --context "$context"
+    else 
+        kubectl --context "$context" "$@"
+    fi
+else
+    kubectl --context "$context" "$@"
+fi
