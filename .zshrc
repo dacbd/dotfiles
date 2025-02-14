@@ -8,6 +8,12 @@ then
   compinit
 fi
 
+
+# kubectl completions
+if command -v kubectl &>/dev/null; then
+  source <(kubectl completion zsh)
+fi
+
 # Rust things
 if [[ -d "$HOME.cargo/bin" ]]; then
   export PATH="$HOME/.cargo/bin:$PATH"
