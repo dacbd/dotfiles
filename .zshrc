@@ -13,6 +13,11 @@ if [[ -d "$HOME.cargo/bin" ]]; then
   export PATH="$HOME/.cargo/bin:$PATH"
 fi
 
+# my custom scripts
+if [[ -d "$HOME/.dacbd/bin" ]]; then
+  export PATH="$HOME/.dacbd/bin:$PATH"
+fi
+
 # my alias setup
 alias python='python3'
 alias vim='nvim'
@@ -76,3 +81,11 @@ export GOARCH=arm64
 export PYENV_ROOT="$HOME/.pyenv"
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
+
+# pnpm
+export PNPM_HOME="/Users/dacbd/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
