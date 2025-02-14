@@ -55,9 +55,9 @@ if [ -z "$context" ]; then
 fi
 
 # Execute kubectl command with selected context
-if [ -z "$@" ]; then
+if [ $# -eq 0 ]; then
     gum confirm "Run k9s instead?"
-    if [ $? == 0 ]; then 
+    if [ $? -eq 0 ]; then 
         echo "starting k9s..."
         k9s --context "$context"
     else 
