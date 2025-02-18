@@ -25,6 +25,7 @@ brew install stow \
     cmake \
     derailed/k9s/k9s \
     hashicorp/tap/terraform \
+    azure-cli \
     helm
 ```
 
