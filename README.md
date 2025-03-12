@@ -23,6 +23,7 @@ brew install stow \
     gnupg \
     pinentry-mac \
     cmake \
+    kind \
     derailed/k9s/k9s \
     hashicorp/tap/terraform \
     azure-cli \
