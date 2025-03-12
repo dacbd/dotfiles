@@ -25,3 +25,7 @@
 
 # misc
 .config/fish
+
+# wandb
+.config/wandb/
+.config/wandbctl/
