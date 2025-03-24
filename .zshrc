@@ -8,6 +8,14 @@ then
   compinit
 fi
 
+# vim mode
+if [ -n "$BASH_VERSION" ]; then
+    set -o vi
+elif [ -n "$ZSH_VERSION" ]; then
+    bindkey -v
+else
+    echo "Unrecognized shell. Please enable Vim mode manually."
+fi
 
 # kubectl completions
 if command -v kubectl &>/dev/null; then
