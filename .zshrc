@@ -37,6 +37,10 @@ alias python='python3'
 alias vim='nvim'
 alias code='VSCODE_CWD="$PWD" open -n -b "com.microsoft.VSCode" --args $*'
 
+if ! command -v kind &> /dev/null; then
+  alias kinda='kind'
+fi
+
 if [[ -d "$HOME/.local/bin" ]]; then
   export PATH="$HOME/.local/bin:$PATH"
 fi
@@ -63,7 +67,7 @@ fi
 # https://docs.astral.sh/uv/#highlights 
 if [[ -d "$HOME/.local/bin" ]]; then
   export PATH="$HOME/.local/bin:$PATH"
-  source $HOME/.local/bin/env
+  source "$HOME/.local/bin/env"
 fi
 
 # pyenv things
@@ -80,12 +84,14 @@ if [[ -d "$HOME/.krew" ]]; then
 fi
 
 # The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/dacbd/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/dacbd/google-cloud-sdk/path.zsh.inc'; fi
+if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]; then 
+  . "$HOME/google-cloud-sdk/path.zsh.inc"
+fi
 
 # The next line enables shell command completion for gcloud.
-if [ -f '/Users/dacbd/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/dacbd/google-cloud-sdk/completion.zsh.inc'; fi
-
-. "$HOME/.local/bin/env"
+if [ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ]; then 
+  . "$HOME/google-cloud-sdk/completion.zsh.inc"
+fi
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
