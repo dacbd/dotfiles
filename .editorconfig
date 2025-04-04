@@ -25,3 +25,8 @@ indent_size = 4
 [*.toml]
 indent_style = space
 indent_size = 2
+
+# bash
+[*.sh]
+indent_style = space
+ident_size = 2
