@@ -1,3 +1,13 @@
+[font]
+[font.normal]
+family = "Hack Nerd Font"
+[font.bold]
+family = "Hack Nerd Font"
+[font.italic]
+family = "Hack Nerd Font"
+[font.bold_italic]
+family = "Hack Nerd Font"
+
 [bell]
 animation = "EaseOutExpo"
 color = "#ffffff"

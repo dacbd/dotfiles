@@ -15,10 +15,12 @@ Base Brew installs.
 ```bash
 brew tap hashicorp/tap
 brew install stow \
+    font-hack-nerd-font \
     wget \
     gum \
     jq \
     neovim \
+    luarocks \
     tmux \
     gnupg \
     pinentry-mac \
@@ -29,6 +31,7 @@ brew install stow \
     hashicorp/tap/terraform \
     azure-cli \
     helm
+brew install --cask zedbrew install --cask zed
 ```
 
 `git submodule update --init --recursive`
@@ -72,4 +75,12 @@ gpg -k
 todo auto install/bootstrap
 
 - https://helm.sh/docs/intro/install/
+
+# nvim
+- https://lazy.folke.io/installation
+- https://github.com/nvim-treesitter/nvim-treesitter
+- https://github.com/neovim/nvim-lspconfig
+- https://github.com/folke/tokyonight.nvim
+- https://github.com/echasnovski/mini.nvim
+- https://github.com/tpope/vim-sleuth
 
