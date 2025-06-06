@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# Choose context with gum, showing current context
+context=$(kubectl config get-contexts -o name | gum choose --header "Select kubernetes context:")
+
+# Exit if no context was selected (user pressed Ctrl+C)
+if [ -z "$context" ]; then
+    echo "No context selected, exiting."
+    exit 1
+fi
+
+# Get and sort the secrets
+releases=$(gum spin --title "Loading Secrets" -- kubectl --context "$context" get secret -l name=wandb -o json | \
+  jq '.items | sort_by(.metadata.creationTimestamp) | reverse')
+
+# pick a manifest by date
+deployment_revision=$(echo "$releases" | jq -r '.[] | .metadata.name' | gum choose --header "Choose which manifest to decode")
+echo "$picked_date"
+result_b64=$(kubectl --context "$context" get secret \
+  -l name=wandb \
+  --field-selector "metadata.name=$deployment_revision" \
+  -o json | jq -r '.items[0].data.release')
+
+decoded_manifest=$(echo "$result_b64" | base64 -d | base64 -d | gunzip)
+manifest=$(echo "$decoded_manifest" | jq '.manifest')
+values=$(echo "$decoded_manifest" | jq '.config' | yq eval -P -)
+
+gum confirm "Save deployment's values.yaml?"
+if [ $? -eq 0 ]; then 
+  filename=$(gum input --placeholder "./values.yaml" --value "./values.yaml")
+  echo "$values" > "$filename"
+fi
+
+gum confirm "Save deployment's manifest?"
+if [ $? -eq 0 ]; then 
+  filename=$(gum input --placeholder "./manifest.yaml" --value "./manifest.yaml")
+  echo -e "$manifest" > "$filename"
+fi
