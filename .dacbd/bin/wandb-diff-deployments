@@ -1,0 +1,43 @@
+#!/bin/bash
+set -euo pipefail
+IFS=$'\n\t'
+
+# Choose context with gum, showing current context
+context=$(kubectl config get-contexts -o name | gum filter --limit 1 --header "Select kubernetes context:")
+
+# Exit if no context was selected (user pressed Ctrl+C)
+if [ -z "$context" ]; then
+  echo "No context selected, exiting."
+  exit 1
+fi
+
+# pick a deployment to look at
+deployment=$(kubectl --context "$context" get deployments \
+  | awk 'NR > 1 { print $1 }' \
+  | gum choose --header "Pick the deployment to inspect")
+
+# get the revisions
+# skip the header lines and get the first column
+# reverse the list
+# remove empty lines
+revision_list=$(kubectl --context "$context" rollout history "deployment/$deployment" \
+  | awk 'NR > 2 { print $1 }' \
+  | tac - \
+  | awk 'NF')
+
+# get the first one aka what is currently deployed
+base_revision=$(echo "$revision_list" | head -n 1)
+
+# select a revision that is not our "base_revision"
+revision=$(echo "$revision_list" \
+  | awk 'NR > 1 { print $1 }' \
+  | gum choose --header "Pick deployment revision")
+
+# temp dir to compare output
+temp_dir=$(mktemp -d)
+kubectl --context "$context" rollout history "deployment/$deployment" --revision="$revision" -o yaml > "$temp_dir/revision-$revision.yaml"
+kubectl --context "$context" rollout history "deployment/$deployment" --revision="$base_revision" -o yaml > "$temp_dir/revision-$base_revision.yaml"
+# compare
+delta --side-by-side "$temp_dir/revision-$revision.yaml" "$temp_dir/revision-$base_revision.yaml"
+# cleanup
+rm -r "$temp_dir"
