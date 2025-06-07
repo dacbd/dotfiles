@@ -26,13 +26,13 @@ manifest=$(echo "$decoded_manifest" | jq '.manifest')
 values=$(echo "$decoded_manifest" | jq '.config' | yq eval -P -)
 
 gum confirm "Save deployment's values.yaml?"
-if [ $? -eq 0 ]; then 
+if [ $? -eq 0 ]; then
   filename=$(gum input --placeholder "./values.yaml" --value "./values.yaml")
   echo "$values" > "$filename"
 fi
 
 gum confirm "Save deployment's manifest?"
-if [ $? -eq 0 ]; then 
+if [ $? -eq 0 ]; then
   filename=$(gum input --placeholder "./manifest.yaml" --value "./manifest.yaml")
   echo -e "$manifest" > "$filename"
 fi
