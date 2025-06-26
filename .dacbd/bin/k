@@ -46,7 +46,7 @@ fi
 #complete -F _kubectl_wrapper_completion $(basename "$0")
 
 # Choose context with gum, showing current context
-context=$(kubectl config get-contexts -o name | gum choose --header "Select kubernetes context:")
+context=$(kubectl config get-contexts -o name | gum filter --limit 1 --header "Select kubernetes context:")
 
 # Exit if no context was selected (user pressed Ctrl+C)
 if [ -z "$context" ]; then
@@ -56,13 +56,7 @@ fi
 
 # Execute kubectl command with selected context
 if [ $# -eq 0 ]; then
-    gum confirm "Run k9s instead?"
-    if [ $? -eq 0 ]; then 
-        echo "starting k9s..."
-        k9s --context "$context"
-    else 
-        kubectl --context "$context" "$@"
-    fi
+    k9s --context "$context"
 else
     kubectl --context "$context" "$@"
 fi
