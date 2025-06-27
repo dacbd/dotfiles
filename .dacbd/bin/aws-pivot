@@ -1,0 +1,47 @@
+#!/bin/bash
+set -euo pipefail
+IFS=$'\n\t'
+
+main () {
+  local profile=""
+  local session_name=""
+  local assume_role_json=""
+  local role_arn=""
+
+  # select profile
+  profile=$(aws configure list-profiles | gum choose --header "Select initial role")
+
+  # check if creds have expired
+  gum spin --title "Checking Profiles credentials..." -- aws --profile "$profile" sts get-caller-identity
+  if [ "$?" -ne 0 ]; then
+    aws sso login --profile "$profile"
+  fi
+
+  # Select a role to pivot into
+  role_arn=$(aws --profile "$profile" iam list-roles --output json | jq -r ".Roles[].Arn | @text" | gum filter --limit 1 --header "Select a Role")
+
+  # Pick a session name this does matter
+  session_name=$(gum input --header "Enter Session Name" --value "TerraformDeployment")
+
+  # Assume that role
+  assume_role_json=$(aws --profile "$profile" sts assume-role --role-arn "$role_arn" --role-session-name "$session_name" --output json)
+
+  # extract details
+  local key_id=$(jq -r ".Credentials.AccessKeyId | @text" <<< "$assume_role_json")
+  local secret_key=$(jq -r ".Credentials.SecretAccessKey | @text" <<< "$assume_role_json")
+  local session_token=$(jq -r ".Credentials.SessionToken | @text" <<< "$assume_role_json")
+  local assumed_role_id=$(jq -r ".AssumedRoleUser.AssumedRoleId | @text" <<< "$assume_role_json")
+
+  echo "Credentials as $assumed_role_id"
+  if command -v pbcopy &> /dev/null; then
+    echo "credentials are in your clipboard. Paste and hit enter."
+    echo "export AWS_ACCESS_KEY_ID=$key_id && export AWS_SECRET_ACCESS_KEY=$secret_key && export AWS_SESSION_TOKEN=$session_token" | pbcopy
+  else
+    echo "copy paste the following to use credentials"
+    echo "export AWS_ACCESS_KEY_ID=$key_id"
+    echo "export AWS_SECRET_ACCESS_KEY=$secret_key"
+    echo "export AWS_SESSION_TOKEN=$session_token"
+  fi
+}
+
+main "$@"
