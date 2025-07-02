@@ -65,6 +65,7 @@ return {
         underline  = false,
         update_in_insert = false,
       })
+      -- Handle lspattach
       vim.api.nvim_create_autocmd('LspAttach', {
         group = vim.api.nvim_create_augroup('lsp-attach', { clear = true }),
         callback = function(event)
@@ -84,8 +85,58 @@ return {
 
         end
       })
+      -- Setup the LSP's I use
+      local capabilities = require('blink.cmp').get_lsp_capabilities()
+      local servers = {
+        gopls = {},
+        pyright = {},
+        rust_analyzer = {},
+        terraformls = {},
+        tailwindcss = {},
+        ts_ls = {},
+        helm_ls = {},
+        bashls = {},
+        dockerls = {},
+        nginx_language_server = {
+          cmd = { 'nginx-language-server' },
+        },
+        starlark_rust = {},
+        tilt = {},
+        lua_ls = {
+          settings = {
+            Lua = {
+              completion = {
+                callSnippet = 'Replace',
+              },
+              -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
+              -- diagnostics = { disable = { 'missing-fields' } },
+            },
+          },
+        }
+      }
 
-      require("lspconfig").lua_ls.setup({})
+      local ensure_installed = vim.tbl_keys(servers or {})
+      require('mason-tool-installer').setup({ ensure_installed = ensure_installed })
+      require('mason-lspconfig').setup {
+        ensure_installed = {}, -- explicitly set to an empty table ( handled by mason-tool-installer)
+        automatic_installation = false,
+        automatic_enable = true,
+        handlers = {
+          function(server_name)
+            local server = servers[server_name] or {}
+            server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+            require('lspconfig')[server_name].setup(server)
+          end,
+        },
+      }
+      -- done
     end,
+  },
+  {
+    'simrat39/rust-tools.nvim',
+    ft = 'rust',
+    opts = {
+      inlay_hints = true,
+    },
   },
 }
