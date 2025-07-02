@@ -19,4 +19,6 @@ return {
       },
     },
   },
+  'farmergreg/vim-lastplace', -- Open files at last cusror position
 }
+
