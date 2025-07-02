@@ -29,3 +29,9 @@
 # wandb
 .config/wandb/
 .config/wandbctl/
+
+# argocd
+.config/argocd/config
+
+# nvim
+.config/nvim.backup

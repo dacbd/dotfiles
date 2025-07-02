@@ -30,7 +30,8 @@ brew install stow \
     podman \
     hashicorp/tap/terraform \
     azure-cli \
-    helm
+    helm \
+    cmctl
 brew install --cask zedbrew install --cask zed
 ```
 
