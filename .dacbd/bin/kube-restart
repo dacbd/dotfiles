@@ -1,0 +1,15 @@
+#!/bin/bash
+set -euo pipefail
+IFS=$'\n\t'
+
+
+function main() {
+  local context=$(kubectl config get-contexts -o name | gum filter --limit=1 --header "Select kubernetes context:")
+  local deployments=$(kubectl --context "$context" get deployments -o name)
+
+  for deployment in $deployments; do
+    echo "$deployment"
+    kubectl --context "$context" rollout restart "$deployment"
+  done
+}
+main "$@"

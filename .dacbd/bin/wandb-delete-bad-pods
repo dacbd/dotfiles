@@ -1,0 +1,57 @@
+#!/bin/bash
+set -euo pipefail
+IFS=$'\n\t'
+
+# Check if gum is installed
+if ! command -v gum &> /dev/null; then
+  echo "Error: 'gum' is not installed."
+  echo "Visit: https://github.com/charmbracelet/gum for installation instructions."
+  exit 1
+fi
+
+# Check if kubectl is installed
+if ! command -v kubectl &> /dev/null; then
+  echo "Error: 'kubectl' is not installed."
+  exit 1
+fi
+
+context=$(kubectl config get-contexts -o name | gum filter --limit=1 --header "Select kubernetes context:")
+
+# Exit if no context was selected (user pressed Ctrl+C)
+if [ -z "$context" ]; then
+  echo "No context selected, exiting."
+  exit 1
+fi
+
+echo "Searching for pods with Error or ContainerStatusUnknown status..."
+
+# Get pods with Error or ContainerStatusUnknown status
+pods_to_delete=$(kubectl --context "$context" get pods --all-namespaces \
+  -o json | jq -r '
+    .items[]
+    | select(.status.phase == "Failed" or 
+             (.status.containerStatuses[]? | select(.state.waiting.reason == "ContainerStatusUnknown")))
+    | "\(.metadata.namespace) \(.metadata.name)"')
+
+if [ -z "$pods_to_delete" ]; then
+  echo "No pods with Error or ContainerStatusUnknown status found."
+  exit 0
+fi
+
+echo "Found the following pods to delete:"
+echo "$pods_to_delete"
+echo ""
+
+if gum confirm "Delete these pods?"; then
+  echo "$pods_to_delete" | while read -r line; do
+    namespace=$(echo "$line" | cut -d' ' -f1)
+    pod_name=$(echo "$line" | cut -d' ' -f2)
+    if [ -n "$namespace" ] && [ -n "$pod_name" ]; then
+      echo "Deleting pod $pod_name in namespace $namespace..."
+      kubectl --context "$context" delete pod "$pod_name" -n "$namespace"
+    fi
+  done
+  echo "Pod deletion completed."
+else
+  echo "Operation cancelled."
+fi

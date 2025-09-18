@@ -1,0 +1,24 @@
+#!/bin/bash
+
+
+# Choose context with gum
+context_1=$(kubectl config get-contexts -o name | gum filter --limit 1 --header "Select Base kubernetes context:")
+
+# Exit if no context was selected (user pressed Ctrl+C)
+if [ -z "$context_1" ]; then
+  echo "No context selected, exiting."
+  exit 1
+fi
+
+deployments=$(kubectl --context "$context_1" get deployments -o name)
+
+deployment=$(gum choose --header "Select a deployment to inspect" <<< "$deployments")
+context_2=$(kubectl config get-contexts -o name | gum filter --limit 1 --header "Select kubernetes context to comparse:")
+
+
+temp_dir=$(mktemp -d)
+kubectl --context "$context_1" exec "$deployment" -- env | sort > "$temp_dir/old"
+kubectl --context "$context_2" exec "$deployment" -- env | sort > "$temp_dir/new"
+delta --side-by-side "$temp_dir/old" "$temp_dir/new"
+rm -rf "$temp_dir"
+
