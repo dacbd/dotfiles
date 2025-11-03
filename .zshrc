@@ -8,6 +8,22 @@ then
   compinit
 fi
 
+# starship
+if [ -n "$BASH_VERSION" ]; then
+    eval "$(starship init bash)"
+elif [ -n "$ZSH_VERSION" ]; then
+    eval "$(starship init zsh)"
+else
+    echo "Unrecognized shell, update starship setup."
+fi
+
+
+# add some secret things
+if [[ -e "~/.secrets_rc" ]]; then
+ source ~/.secrets_rc
+fi
+
+
 # vim mode
 if [ -n "$BASH_VERSION" ]; then
     set -o vi
@@ -15,6 +31,12 @@ elif [ -n "$ZSH_VERSION" ]; then
     bindkey -v
 else
     echo "Unrecognized shell. Please enable Vim mode manually."
+fi
+
+# direnv
+# brew install direnv
+if command -v direnv &>/dev/null; then
+  eval "$(direnv hook zsh)"
 fi
 
 # kubectl completions
@@ -111,3 +133,13 @@ case ":$PATH:" in
 esac
 # pnpm end
 export PATH="$(go env GOPATH)/bin:$PATH"
+
+# opencode
+export PATH=/Users/dacbd/.opencode/bin:$PATH
+
+# bun completions
+[ -s "/Users/dacbd/.bun/_bun" ] && source "/Users/dacbd/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"

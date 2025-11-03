@@ -24,3 +24,15 @@ vim.api.nvim_create_autocmd('TextYankPost', {
     vim.highlight.on_yank()
   end,
 })
+
+-- Code folds
+vim.opt.foldmethod = 'indent'
+vim.api.nvim_create_autocmd({ 'BufWinLeave' }, {
+  pattern = { '*.*' },
+  command = 'mkview',
+})
+vim.api.nvim_create_autocmd({ 'BufWinEnter' }, {
+  pattern = { '*.*' },
+  command = 'silent! loadview',
+})
+vim.opt.foldlevelstart = 6

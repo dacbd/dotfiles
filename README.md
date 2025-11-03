@@ -15,6 +15,7 @@ Base Brew installs.
 ```bash
 brew tap hashicorp/tap
 brew install stow \
+    starship \
     font-hack-nerd-font \
     wget \
     gum \
@@ -33,6 +34,11 @@ brew install stow \
     helm \
     cmctl
 brew install --cask zedbrew install --cask zed
+brew install --cask ghostty
+
+# https://github.com/robscott/kube-capacity
+brew tap robscott/tap
+brew install robscott/tap/kube-capacity
 ```
 
 `git submodule update --init --recursive`
