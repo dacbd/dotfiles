@@ -1,0 +1,37 @@
+#!/bin/bash
+set -euo pipefail
+IFS=$'\n\t'
+
+
+context=$(kubectl config get-contexts -o name | gum filter --limit=1 --header "Select kubernetes context:")
+
+allpods=$(gum spin --title "Loading pods..." -- kubectl --context "$context" get pods -A)
+
+unknown=$(awk '$4 == "ContainerStatusUnknown" || $4 == "Init:ContainerStatusUnknown" { print $1 " " $2}' <<< "$allpods")
+evicted=$(awk '$4 == "Evicted" { print $1 " " $2}' <<< "$allpods")
+
+echo "unknown pods states: $(wc -l <<< "$unknown")"
+echo "evicted pods states: $(wc -l <<< "$evicted")"
+
+if [[ -n "$unknown" ]]; then
+  echo "Cleaning up unknown pods"
+  MAX_JOBS=10
+  count=0
+  while read -r line; do
+    echo "$context $line" | xargs -n3 sh -c 'kubectl --context "$0" --namespace "$1" delete pod "$2"' >> /dev/null &
+    ((++count % MAX_JOBS == 0)) && gum spin --title "Deleting 10 pods at a time." -- wait
+  done < <(echo "$unknown")
+  gum spin --title "Waiting for final deletes to finish" -- wait
+fi
+
+if [[ -n "$evicted" ]]; then
+  echo "Cleaning up evicted pods"
+  MAX_JOBS=10
+  count=0
+  while read -r line; do
+    echo "$context $line" | xargs -n3 sh -c 'kubectl --context "$0" --namespace "$1" delete pod "$2"' >> /dev/null &
+    ((++count % MAX_JOBS == 0)) && gum spin --title "Deleting 10 pods at a time." -- wait
+  done < <(echo "$evicted")
+  gum spin --title "Waiting for final deletes to finish" -- wait
+fi
+
