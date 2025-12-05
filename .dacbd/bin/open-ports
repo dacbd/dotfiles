@@ -1,0 +1,21 @@
+#!/bin/bash
+set -euo pipefail
+IFS=$'\n\t'
+
+
+function main() {
+  case "$(uname)" in
+    "Linux")
+      sudo ss -tulnp
+      ;;
+    "Darwin")
+      echo "Waring, not showing UDP ports"
+      sudo lsof -iTCP -sTCP:LISTEN -P -n
+      ;;
+    *)
+      echo "unknown system"
+      exit 1
+      ;;
+  esac
+}
+main "$@"
