@@ -2,10 +2,34 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+function render_progress_bar() {
+  local current="$1"
+  local total="$2"
+  local width=30
+  local filled=0
+  local percent=100
+  local bar=""
+
+  if (( total > 0 )); then
+    filled=$(( current * width / total ))
+    percent=$(( current * 100 / total ))
+  fi
+
+  printf -v bar '%*s' "$filled" ''
+  bar=${bar// /#}
+  printf '\r[%s%-*s] %3d%% (%d/%d)' "$bar" "$(( width - filled ))" '' "$percent" "$current" "$total"
+}
 
 function main() {
   local context=$(kubectl config get-contexts -o name | gum filter --limit=1 --header "Select kubernetes context:")
   local namespaces=""
+  local restart_targets=()
+  local namespace=""
+  local resources=""
+  local resource=""
+  local total_targets=0
+  local current_target=0
+
   case "$(gum choose --header "Target namespace:" "all" "selected")" in
     "all")
       namespaces=$(kubectl --context "$context" get namespaces -o name | cut -d/ -f2)
@@ -22,12 +46,34 @@ function main() {
   esac
 
   for namespace in $namespaces; do
-    local deployments=""
-    deployments=$(kubectl --context "$context" --namespace "$namespace" get deployments -o name)
-    for deployment in $deployments; do
-      echo "Restarting $deployment in $namespace ..."
-      kubectl --context "$context" --namespace "$namespace" rollout restart "$deployment" > /dev/null
+    resources=$(kubectl --context "$context" --namespace "$namespace" get deployments,statefulsets -o name)
+    if [[ -z "$resources" ]]; then
+      continue
+    fi
+
+    for resource in $resources; do
+      restart_targets+=("${namespace}"$'\t'"${resource}")
     done
   done
+
+  total_targets=${#restart_targets[@]}
+
+  if (( total_targets == 0 )); then
+    echo "No deployments or statefulsets found to restart."
+    exit 0
+  fi
+
+  echo "Triggering kubectl rollout restarts..."
+  for target in "${restart_targets[@]}"; do
+    namespace=${target%%$'\t'*}
+    resource=${target#*$'\t'}
+
+    kubectl --context "$context" --namespace "$namespace" rollout restart "$resource" > /dev/null
+
+    current_target=$(( current_target + 1 ))
+    render_progress_bar "$current_target" "$total_targets"
+  done
+
+  printf '\n'
 }
 main "$@"
