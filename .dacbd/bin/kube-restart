@@ -5,11 +5,29 @@ IFS=$'\n\t'
 
 function main() {
   local context=$(kubectl config get-contexts -o name | gum filter --limit=1 --header "Select kubernetes context:")
-  local deployments=$(kubectl --context "$context" get deployments -o name)
+  local namespaces=""
+  case "$(gum choose --header "Target namespace:" "all" "selected")" in
+    "all")
+      namespaces=$(kubectl --context "$context" get namespaces -o name | cut -d/ -f2)
+      ;;
+    "selected")
+      namespaces=$(kubectl --context "$context" get namespaces -o name \
+        | cut -d/ -f2 \
+        | gum choose --no-limit
+      )
+      ;;
+    *)
+      echo "Unknown option."
+      exit 1
+  esac
 
-  for deployment in $deployments; do
-    echo "$deployment"
-    kubectl --context "$context" rollout restart "$deployment"
+  for namespace in $namespaces; do
+    local deployments=""
+    deployments=$(kubectl --context "$context" --namespace "$namespace" get deployments -o name)
+    for deployment in $deployments; do
+      echo "Restarting $deployment in $namespace ..."
+      kubectl --context "$context" --namespace "$namespace" rollout restart "$deployment" > /dev/null
+    done
   done
 }
 main "$@"
