@@ -98,7 +98,14 @@ return {
         terraformls = {},
         tailwindcss = {},
         ts_ls = {},
-        helm_ls = {},
+        helm_ls = {
+          settings = {
+            ['helm-ls'] = {
+              yamlls = { enabled = false },
+              helmLint = { enabled = false },
+            },
+          },
+        },
         bashls = {},
         dockerls = {},
         nginx_language_server = {
@@ -106,6 +113,7 @@ return {
         },
         starlark_rust = {},
         tilt = {},
+        yamlls = {},
         lua_ls = {
           settings = {
             Lua = {
@@ -133,6 +141,21 @@ return {
           end,
         },
       }
+
+      for name, config in pairs(servers) do
+        if config == true then
+          config = {}
+        end
+        -- Only call vim.lsp.config if there are server-specific settings
+        if next(config) ~= nil then
+          -- Remove manual_install flag as it's not an LSP config field
+          local lsp_config = vim.tbl_deep_extend("force", {}, config)
+          lsp_config.manual_install = nil
+          vim.lsp.config(name, lsp_config)
+        end
+
+        vim.lsp.enable(name)
+      end
       -- done
     end,
   },

@@ -59,6 +59,7 @@ alias python='python3'
 alias vim='nvim'
 alias code='VSCODE_CWD="$PWD" open -n -b "com.microsoft.VSCode" --args $*'
 alias kinda='kind'
+alias ls='ls --color=auto'
 
 if ! command -v kind &> /dev/null; then
   alias kinda='kind'
