@@ -12,7 +12,7 @@ return {
         "bash", "c", "css", "dockerfile", "go", "gomod", "gosum",
         "hcl", "html", "javascript", "json", "lua", "luadoc",
         "markdown", "markdown_inline", "python", "query", "rust",
-        "terraform", "toml", "tsx", "typescript", "vim", "vimdoc", "yaml",
+        "terraform", "toml", "tsx", "typescript", "vim", "vimdoc", "yaml", "helm", "gotmpl"
       })
 
       vim.api.nvim_create_autocmd("FileType", {
@@ -99,12 +99,12 @@ return {
         tailwindcss = {},
         ts_ls = {},
         helm_ls = {
-          settings = {
-            ['helm-ls'] = {
-              yamlls = { enabled = false },
-              helmLint = { enabled = false },
-            },
-          },
+          -- settings = {
+          --   ['helm-ls'] = {
+          --     yamlls = { enabled = false },
+          --     helmLint = { enabled = false },
+          --   },
+          -- },
         },
         bashls = {},
         dockerls = {},
@@ -129,34 +129,21 @@ return {
 
       local ensure_installed = vim.tbl_keys(servers or {})
       require('mason-tool-installer').setup({ ensure_installed = ensure_installed })
-      require('mason-lspconfig').setup {
-        ensure_installed = {}, -- explicitly set to an empty table ( handled by mason-tool-installer)
+      require('mason-lspconfig').setup({
+        ensure_installed = {}, -- explicitly set to an empty table (handled by mason-tool-installer)
         automatic_installation = false,
-        automatic_enable = true,
-        handlers = {
-          function(server_name)
-            local server = servers[server_name] or {}
-            server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-            require('lspconfig')[server_name].setup(server)
-          end,
-        },
-      }
+        automatic_enable = false, -- we enable each server explicitly below
+      })
+
+      -- Apply blink.cmp capabilities to every server via the '*' default config
+      vim.lsp.config('*', { capabilities = capabilities })
 
       for name, config in pairs(servers) do
-        if config == true then
-          config = {}
-        end
-        -- Only call vim.lsp.config if there are server-specific settings
         if next(config) ~= nil then
-          -- Remove manual_install flag as it's not an LSP config field
-          local lsp_config = vim.tbl_deep_extend("force", {}, config)
-          lsp_config.manual_install = nil
-          vim.lsp.config(name, lsp_config)
+          vim.lsp.config(name, config)
         end
-
         vim.lsp.enable(name)
       end
-      -- done
     end,
   },
   {
@@ -164,6 +151,12 @@ return {
     ft = 'rust',
     opts = {
       inlay_hints = true,
+    },
+  },
+  {
+    "qvalentin/helm-ls.nvim",
+    ft = "helm",
+    opts = {
     },
   },
 }
