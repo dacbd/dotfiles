@@ -12,7 +12,7 @@ return {
         "bash", "c", "css", "dockerfile", "go", "gomod", "gosum",
         "hcl", "html", "javascript", "json", "lua", "luadoc",
         "markdown", "markdown_inline", "python", "query", "rust",
-        "terraform", "toml", "tsx", "typescript", "vim", "vimdoc", "yaml", "helm", "gotmpl"
+        "terraform", "toml", "tsx", "typescript", "vim", "vimdoc", "yaml", "helm", "gotmpl", "just"
       })
 
       vim.api.nvim_create_autocmd("FileType", {
