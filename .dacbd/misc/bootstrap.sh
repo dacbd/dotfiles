@@ -19,6 +19,11 @@ brew install stow \
     hashicorp/tap/terraform \
     azure-cli \
     helm \
-    cmctl
+    cmctl \
+    pyenv \
+    btop \
+    ripgrep
 brew install --cask zedbrew install --cask zed
 brew install --cask ghostty
+
+
