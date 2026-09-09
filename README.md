@@ -21,6 +21,7 @@ brew install stow \
     gum \
     jq \
     neovim \
+    tree-sitter-cli \
     luarocks \
     tmux \
     gnupg \
