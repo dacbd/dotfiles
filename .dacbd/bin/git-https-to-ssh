@@ -1,0 +1,36 @@
+#!/bin/bash
+set -euo pipefail
+
+if (( $# > 1 )); then
+  echo "Usage: ${0##*/} [remote]" >&2
+  exit 1
+fi
+
+if ! git rev-parse --git-dir >/dev/null 2>&1; then
+  echo "Error: not inside a Git repository." >&2
+  exit 1
+fi
+
+remote=${1:-origin}
+if ! url=$(git remote get-url -- "$remote"); then
+  exit 1
+fi
+
+if [[ "$url" != https://* ]]; then
+  printf 'Remote %s is not HTTPS; unchanged.\n' "$remote"
+  exit 0
+fi
+
+# Standard Git SSH URLs use the git user and preserve the repository path.
+address=${url#https://}
+host=${address%%/*}
+path=${address#*/}
+host=${host##*@}
+if [[ "$address" != */* || -z "$host" || -z "$path" || "$host" == *:* || "$path" == *\?* || "$path" == *\#* ]]; then
+  echo "Error: expected an HTTPS URL with a hostname and repository path, without a port, query, or fragment." >&2
+  exit 1
+fi
+
+ssh_url="git@${host}:${path}"
+git remote set-url -- "$remote" "$ssh_url"
+printf 'Remote %s now uses %s\n' "$remote" "$ssh_url"
