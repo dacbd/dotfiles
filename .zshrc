@@ -91,15 +91,19 @@ fi
 # https://docs.astral.sh/uv/#highlights 
 if [[ -d "$HOME/.local/bin" ]]; then
   export PATH="$HOME/.local/bin:$PATH"
-  source "$HOME/.local/bin/env"
+  if [[ -d "$HOME/.local/bin/env" ]]; then
+    source "$HOME/.local/bin/env"
+  fi
 fi
 
 # pyenv things
 # brew install pyenv
-if [[ -d "$HOME/.pyenv" && ! -x "$(command -v uv)" ]]; then
-  export PYENV_ROOT="$HOME/.pyenv"
-  command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
-  eval "$(pyenv init -)"
+if command -v pyenv >/dev/null 2>&1; then
+  if [[ -d "$HOME/.pyenv" && ! -x "$(command -v uv)" ]]; then
+    export PYENV_ROOT="$HOME/.pyenv"
+    command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+    eval "$(pyenv init -)"
+  fi
 fi
 
 # kubctl/krew
@@ -123,8 +127,10 @@ export NVM_DIR="$HOME/.nvm"
 export PATH="$HOME/go/bin:$PATH"
 export GOARCH=arm64
 export PYENV_ROOT="$HOME/.pyenv"
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
+if command -v pyenv >/dev/null 2>&1; then
+  eval "$(pyenv init -)"
+  eval "$(pyenv virtualenv-init -)"
+fi
 
 # pnpm
 export PNPM_HOME="/Users/dacbd/Library/pnpm"
@@ -133,7 +139,10 @@ case ":$PATH:" in
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 # pnpm end
-export PATH="$(go env GOPATH)/bin:$PATH"
+
+if command -v go >/dev/null 2>&1; then
+  export PATH="$(go env GOPATH)/bin:$PATH"
+fi
 
 # opencode
 export PATH=/Users/dacbd/.opencode/bin:$PATH
@@ -144,3 +153,6 @@ export PATH=/Users/dacbd/.opencode/bin:$PATH
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+
+# Vite+ bin (https://viteplus.dev)
+. "$HOME/.config/vite-plus/env"

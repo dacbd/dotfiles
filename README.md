@@ -82,6 +82,8 @@ gpg -k
 todo auto install/bootstrap
 
 - https://helm.sh/docs/intro/install/
+- https://docs.astral.sh/uv/getting-started/installation/
+- https://viteplus.dev/guide/#install-vp
 
 # nvim
 - https://lazy.folke.io/installation
