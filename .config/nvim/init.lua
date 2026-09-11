@@ -36,3 +36,10 @@ vim.api.nvim_create_autocmd({ 'BufWinEnter' }, {
   command = 'silent! loadview',
 })
 vim.opt.foldlevelstart = 6
+
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+  pattern = "/**/deployments/**/application.yaml",
+  callback = function()
+    vim.bo.filetype = "helm"
+  end,
+})

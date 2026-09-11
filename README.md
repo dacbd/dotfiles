@@ -25,6 +25,7 @@ brew install stow \
     luarocks \
     tmux \
     gnupg \
+    sops \
     pinentry-mac \
     cmake \
     kind \
@@ -79,6 +80,62 @@ gpg -k
 ```
 
 
+## SOPS with PGP and YubiKey
+
+Install with `brew install sops gnupg pinentry-mac` (also included in the
+bootstrap script). Import the public keys on each machine:
+
+```bash
+curl -fsSL https://github.com/dacbd.gpg -o /tmp/dacbd-public.gpg
+gpg --import /tmp/dacbd-public.gpg
+gpg --fingerprint
+```
+
+The repo's `.sops.yaml` encrypts `*.sops.yaml`, `*.sops.yml`, `*.sops.json`,
+`*.sops.env`, `*.sops.ini`, and `*.sops.txt` files to these primary fingerprints
+from GitHub (2026-09-10). GnuPG selects their encryption subkeys:
+
+- `BD21EB682F56D1465A59484866D6BAAC0D9ADEE0`
+- `5961843D4E1BE41DAE82244F760B1BB84FB56E9E`
+- `7F6CD1E06202132DA96A7275D9AC08EFCA88669E`
+
+Any one matching encryption private key can decrypt. For a YubiKey, insert the
+card and run `gpg --card-status` to register its keys with GnuPG. SOPS uses GnuPG
+and gpg-agent to decrypt with the card; enter the PIN and touch the key if
+requested. The card must contain one of the matching **encryption** subkeys;
+an SSH authentication key alone is insufficient. The existing dotfiles configure
+`pinentry-mac`, gpg-agent, and `GPG_TTY`.
+
+Run from the repo root:
+
+```bash
+# Create or edit an encrypted file (requires a matching private key/YubiKey).
+sops edit secrets.sops.yaml
+
+# Decrypt to stdout.
+sops decrypt secrets.sops.yaml
+
+# Encrypt an existing plaintext file using only the public keys.
+sops encrypt --filename-override secrets.sops.yaml \
+    --output secrets.sops.yaml /path/outside/repo/secrets.yaml
+```
+
+Keep plaintext secrets and private keys outside this repository, and commit only
+encrypted files. The filename convention selects recipients; it does not
+implicitly encrypt files when saved or committed.
+
+Recipients are pinned in `.sops.yaml`; GitHub changes are not fetched during
+encryption. To change recipients, download and import the updated public keys,
+review their fingerprints, update the `pgp` list, then run
+`sops updatekeys path/to/file.sops.yaml` for each encrypted file with an existing
+matching private key available. This also migrates existing age-encrypted files,
+but requires their original age/SSH private key to decrypt first. If removing a
+recipient, also run `sops rotate --in-place path/to/file.sops.yaml` afterward to
+replace the data key. Old versions in Git history remain decryptable by old
+recipients.
+
+See the [SOPS documentation](https://getsops.io/docs/) for more usage details.
+
 # CLI tools
 todo auto install/bootstrap
 
@@ -93,4 +150,3 @@ todo auto install/bootstrap
 - https://github.com/folke/tokyonight.nvim
 - https://github.com/echasnovski/mini.nvim
 - https://github.com/tpope/vim-sleuth
-

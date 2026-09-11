@@ -11,6 +11,7 @@ brew install stow \
     luarocks \
     tmux \
     gnupg \
+    sops \
     pinentry-mac \
     cmake \
     kind \
@@ -25,5 +26,4 @@ brew install stow \
     ripgrep
 brew install --cask zedbrew install --cask zed
 brew install --cask ghostty
-
 
