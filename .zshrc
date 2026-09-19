@@ -44,6 +44,11 @@ if command -v kubectl &>/dev/null; then
   source <(kubectl completion zsh)
 fi
 
+# argocd completions
+if command -v argocd &>/dev/null; then
+  source <(argocd completion zsh)
+fi
+
 # Rust things
 if [[ -d "$HOME.cargo/bin" ]]; then
   export PATH="$HOME/.cargo/bin:$PATH"

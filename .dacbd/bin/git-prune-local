@@ -1,0 +1,58 @@
+#!/bin/bash
+set -euo pipefail
+
+dry_run=false
+delete_flag=-d
+for arg in "$@"; do
+  case "$arg" in
+    --dry-run) dry_run=true ;;
+    --force) delete_flag=-D ;;
+    -h|--help)
+      echo "Usage: ${0##*/} [--dry-run] [--force]"
+      echo "Delete local branches whose names are absent from every remote."
+      echo "Keep checked-out branches; --force allows deleting unmerged branches."
+      exit 0
+      ;;
+    *) printf 'Unknown option: %s\n' "$arg" >&2; exit 1 ;;
+  esac
+done
+
+if ! git rev-parse --git-dir >/dev/null 2>&1; then
+  echo "Error: not inside a Git repository." >&2
+  exit 1
+fi
+
+remotes=$(git remote)
+if [[ -z "$remotes" ]]; then
+  echo "Error: no remotes configured; nothing deleted." >&2
+  exit 1
+fi
+
+# Query actual remote heads, including branches excluded by fetch refspecs.
+# Finish every query before deleting anything; any remote failure aborts.
+remote_branches=$'\n'
+while IFS= read -r remote; do
+  heads=$(git ls-remote --heads -- "$remote")
+  while IFS=$'\t' read -r sha ref; do
+    [[ -n "$ref" ]] || continue
+    remote_branches+="${ref#refs/heads/}"$'\n'
+  done <<< "$heads"
+done <<< "$remotes"
+
+branches=$(git for-each-ref --format='%(refname:short)' refs/heads/)
+worktrees=$(git worktree list --porcelain)
+status=0
+while IFS= read -r branch; do
+  [[ -n "$branch" ]] || continue
+  if [[ "$remote_branches" == *$'\n'"$branch"$'\n'* ]]; then
+    continue
+  fi
+  if [[ $'\n'"$worktrees"$'\n' == *$'\n'"branch refs/heads/$branch"$'\n'* ]]; then
+    printf 'Keeping checked-out branch: %s\n' "$branch"
+  elif "$dry_run"; then
+    printf 'Would delete: %s\n' "$branch"
+  else
+    git branch "$delete_flag" -- "$branch" || status=1
+  fi
+done <<< "$branches"
+exit "$status"

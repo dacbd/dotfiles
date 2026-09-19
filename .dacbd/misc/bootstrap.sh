@@ -16,6 +16,7 @@ brew install stow \
     cmake \
     kind \
     derailed/k9s/k9s \
+    argocd \
     podman \
     hashicorp/tap/terraform \
     azure-cli \
@@ -26,4 +27,9 @@ brew install stow \
     ripgrep
 brew install --cask zedbrew install --cask zed
 brew install --cask ghostty
+
+# Install pup (datadog)
+brew trust datadog-labs/pack
+brew tap datadog-labs/pack
+brew install datadog-labs/pack/pup
 

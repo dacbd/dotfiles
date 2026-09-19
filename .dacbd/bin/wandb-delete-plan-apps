@@ -1,0 +1,38 @@
+#!/bin/bash
+set -euo pipefail
+
+# Delete temporary plan Applications without deleting their referenced workloads.
+if [[ $# -gt 0 ]]; then
+  echo "Usage: $(basename "$0")" >&2
+  echo 'Deletes Applications labeled ctrlplane.dev/plan=true from argocd.wandb.dev.' >&2
+  if [[ $# -eq 1 && ( "$1" == '--help' || "$1" == '-h' ) ]]; then
+    exit 0
+  fi
+  exit 2
+fi
+
+if ! command -v argocd >/dev/null 2>&1; then
+  echo "Error: argocd is required." >&2
+  exit 1
+fi
+
+server='argocd.wandb.dev'
+selector='ctrlplane.dev/plan=true'
+flags=(--server "$server" --grpc-web --selector "$selector")
+
+apps=$(argocd app list "${flags[@]}" -o name)
+if [[ -z "$apps" ]]; then
+  echo "No plan Applications found on $server."
+  exit 0
+fi
+
+printf 'Deleting plan Applications from %s (preserving workloads):\n%s\n' "$server" "$apps"
+argocd app delete "${flags[@]}" --cascade=false --yes
+
+remaining=$(argocd app list "${flags[@]}" -o name)
+if [[ -n "$remaining" ]]; then
+  printf 'Plan Applications still present (possibly newly created):\n%s\n' "$remaining" >&2
+  exit 1
+fi
+
+echo 'Verified: no plan Applications remain.'

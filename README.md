@@ -30,6 +30,7 @@ brew install stow \
     cmake \
     kind \
     derailed/k9s/k9s \
+    argocd \
     podman \
     hashicorp/tap/terraform \
     azure-cli \
